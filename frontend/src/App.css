@@ -1,0 +1,519 @@
+/* ============================================
+   MERN Weather Advisory — Performance Optimized
+   ============================================ */
+
+:root {
+  --primary-blue: #2196F3;
+  --primary-dark: #1565C0;
+  --accent-green: #4CAF50;
+  --accent-orange: #FF9800;
+  --glass-white: rgba(0, 0, 0, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --text-light: #FFFFFF;
+  --text-dark: #212121;
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --transition: 0.3s ease;
+}
+
+/* ============================================
+   Base & Optimized Background
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  min-height: 100vh;
+  color: var(--text-light);
+  line-height: 1.6;
+  padding: 20px 10px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Static background - no animation for better performance [web:17] */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('thunderstorm-village.jpg') center center / cover no-repeat fixed;
+  z-index: -2;
+  /* Remove animation - saves GPU cycles */
+}
+
+/* Simplified overlay - single gradient instead of multiple [web:11] */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, 
+    rgba(0, 0, 0, 0.3) 0%, 
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  z-index: -1;
+}
+
+/* ============================================
+   Container
+   ============================================ */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  animation: fadeIn 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+
+/* Simplified fade-in [web:17] */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.container h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+  letter-spacing: -1px;
+}
+
+/* ============================================
+   Optimized Search Bar
+   ============================================ */
+.searchbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 2rem;
+  background: var(--glass-white);
+  /* Reduced blur for better performance [web:16] */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  /* Tell browser to optimize this element [web:16] */
+  will-change: transform;
+}
+
+.searchbar:focus-within {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.searchbar input {
+  flex: 1;
+  padding: 16px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-dark);
+  transition: var(--transition);
+  outline: none;
+  font-weight: 500;
+}
+
+.searchbar input:focus {
+  background: #FFFFFF;
+  border-color: var(--primary-blue);
+}
+
+.searchbar input::placeholder {
+  color: #757575;
+}
+
+.searchbar button {
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* Optimize for transform animations [web:17] */
+  will-change: transform;
+}
+
+.searchbar button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.searchbar button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.searchbar button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Optimized Weather Card
+   ============================================ */
+.weather-card {
+  background: var(--glass-white);
+  /* Reduced blur [web:16] */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  position: relative;
+  will-change: transform;
+}
+
+/* Removed expensive ::before animation overlay [web:20] */
+
+.weather-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.weather-card h2 {
+  font-size: 2rem;
+  color: #FFFFFF;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-weight: 700;
+}
+
+.weather-card h2::before {
+  content: '📍';
+  font-size: 1.8rem;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+}
+
+.metrics > div {
+  background: rgba(255, 255, 255, 0.15);
+  /* No backdrop-filter on metric items - too expensive [web:16] */
+  padding: 1.3rem 1.8rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-left: 5px solid var(--primary-blue);
+  transition: var(--transition);
+  color: #FFFFFF;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  will-change: transform;
+}
+
+/* Removed expensive ::before shimmer [web:20] */
+
+.metrics > div:hover {
+  border-left-color: #4CAF50;
+  /* Only transform - most performant [web:17] */
+  transform: translateX(6px);
+}
+
+/* ============================================
+   Chart Container
+   ============================================ */
+.chart-container {
+  height: 600px;
+  background: var(--glass-white);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+}
+
+.chart-container h4 {
+  font-size: 1.5rem;
+  color: #FFFFFF;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  font-weight: 700;
+}
+
+.chart-container h4::before {
+  content: '📊';
+  font-size: 1.4rem;
+}
+
+/* ============================================
+   Advisory Box
+   ============================================ */
+.advisory-box {
+  background: rgba(255, 193, 7, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 2.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  box-shadow: 0 4px 20px rgba(255, 152, 0, 0.3);
+  margin-bottom: 2rem;
+}
+
+.advisory-box h3 {
+  font-size: 2rem;
+  color: #FFFFFF;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-weight: 700;
+}
+
+.advisory-box h3::before {
+  content: '🌾';
+  font-size: 1.8rem;
+}
+
+/* Removed expensive bounce animation [web:20] */
+
+.advisory {
+  background: rgba(255, 255, 255, 0.95);
+  margin-bottom: 1.2rem;
+  padding: 1.5rem 1.8rem;
+  border-left: 6px solid #FF9800;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: var(--transition);
+  will-change: transform;
+}
+
+/* Simplified hover - only transform [web:17] */
+.advisory:hover {
+  transform: translateX(8px);
+  border-left-color: #4CAF50;
+}
+
+.advisory strong {
+  display: block;
+  font-size: 1.2rem;
+  color: #1565C0;
+  margin-bottom: 0.6rem;
+  font-weight: 700;
+}
+
+.advisory p {
+  color: #424242;
+  line-height: 1.8;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ============================================
+   PDF Button
+   ============================================ */
+.advisory-box button {
+  margin-top: 1.8rem;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  will-change: transform;
+}
+
+.advisory-box button::before {
+  content: '📄';
+  font-size: 1.2rem;
+}
+
+.advisory-box button:hover {
+  transform: translateY(-3px);
+}
+
+.advisory-box button:active {
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   Error
+   ============================================ */
+.error {
+  background: rgba(244, 67, 54, 0.15);
+  backdrop-filter: blur(20px);
+  color: #FFFFFF;
+  padding: 1.2rem 1.8rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  border-left: 6px solid #F44336;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Removed shake animation for errors */
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+  .container h1 {
+    font-size: 2.2rem;
+  }
+
+  .searchbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .searchbar button {
+    width: 100%;
+  }
+
+  .weather-card h2 {
+    font-size: 1.6rem;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .weather-card, .advisory-box, .chart-container {
+    padding: 1.8rem;
+  }
+  
+  /* Disable transforms on mobile for better performance [web:15] */
+  .weather-card:hover,
+  .advisory:hover,
+  .metrics > div:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  body::before {
+    /* Use smaller background image on mobile if needed */
+    background-attachment: scroll; /* Better for mobile [web:15] */
+  }
+
+  .container {
+    padding: 0 12px;
+  }
+
+  .container h1 {
+    font-size: 1.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .weather-card, .advisory-box, .chart-container {
+    padding: 1.5rem;
+    /* Reduce blur on mobile [web:16] */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+
+  .advisory {
+    padding: 1.2rem;
+  }
+}
+
+/* ============================================
+   Accessibility & Performance
+   ============================================ */
+.searchbar input:focus,
+.searchbar button:focus,
+.advisory-box button:focus {
+  outline: 3px solid rgba(33, 150, 243, 0.6);
+  outline-offset: 3px;
+}
+
+/* Respect user preferences [web:17] */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   Hardware Acceleration Hints [web:17]
+   ============================================ */
+.weather-card,
+.advisory,
+.metrics > div,
+.searchbar,
+.searchbar button,
+.advisory-box button {
+  /* Force GPU acceleration for smoother transforms */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* ============================================
+   Print Optimization
+   ============================================ */
+@media print {
+  body::before,
+  body::after {
+    display: none;
+  }
+  
+  .searchbar,
+  .advisory-box button {
+    display: none;
+  }
+  
+  .weather-card,
+  .advisory-box {
+    box-shadow: none;
+    background: white;
+    color: black;
+    backdrop-filter: none;
+  }
+}
