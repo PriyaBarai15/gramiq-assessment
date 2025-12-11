@@ -29,9 +29,10 @@ Simple MERN app that fetches weather (OpenWeatherMap) and generates farmer-frien
    - `npm start`
 5. Open `http://localhost:3000`
 
-## Demo video
-Record a 2–3 min demo showing:
+## Demo video contains
 - Search for a city
 - Weather data & chart
 - Advisory generated
 - Download PDF (optional)
+
+https://github.com/user-attachments/assets/08a6ca65-46a9-4e4f-b13e-6c4c7d8d91e9
